@@ -11,7 +11,9 @@ Simple project to merge excel workbooks into one large workbook
 * install project dependecies 
 
 ```sh
-composer require phpoffice/phpspreadsheet
+
+composer install
+
 ```
 
 
@@ -19,10 +21,16 @@ composer require phpoffice/phpspreadsheet
 * run `index.php` using server or cli as
 
 ```sh
+
 php index.php
+
 ```
 
 *vualah, that's it
+
+### TODO
+
+* A lot
 
 ### License
 MIT
