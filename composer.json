@@ -1,0 +1,25 @@
+{
+    "name": "peter/merge-excel",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Peter Munene",
+            "email": "peternjega7@gmail.com"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "^2.1",
+        "symfony/console": "^7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "MergeExcel\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
