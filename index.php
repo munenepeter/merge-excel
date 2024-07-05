@@ -10,11 +10,11 @@ date_default_timezone_set('Africa/Nairobi');
 
 require 'vendor/autoload.php';
 
-$application = new Application();
+// $application = new Application();
 
 
-$application->add(new \MergeExcel\MergeCommand());
-$application->add(new ConvertCommand());
+// $application->add(new \MergeExcel\MergeCommand());
+// $application->add(new ConvertCommand());
 
 if ($argc < 2) {
     echo "Error: No command provided.\n";
@@ -36,5 +36,19 @@ if (!in_array($commandName, ['convert', 'merge'])) {
 // Remove the command name from arguments
 array_shift($argv);
 
+
+switch ($argv) {
+    case 'merge':
+        # code...
+        break;
+    case 'convert':
+        # code...
+        break;
+    default:
+        # code...
+        break;
+}
+
+
 // Run the application
-$application->run();
+// $application->run();
