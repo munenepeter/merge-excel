@@ -13,8 +13,10 @@ class Parser {
     private $total_sheets = 0;
     private $no_of_workbooks = 0;
 
+    public const OUTPUT_DIR = __DIR__ . '/../output';
+
     public function __construct() {
-        $this->create_workbook();
+        $this->new_spreadsheet = $this->create_workbook();
     }
 
     public function __destruct() {
@@ -56,7 +58,7 @@ class Parser {
 
     public function merge(string $path, callable $progressCallback = null): bool {
 
-        if (!$this->new_spreadsheet instanceof Spreadsheet)
+        if ($this->new_spreadsheet == null)
             throw new \LogicException("We have not created a new spreadsheet!");
 
         $sheet_index = 0;
@@ -105,7 +107,7 @@ class Parser {
         return array_map(fn ($file) => $path . DIRECTORY_SEPARATOR . $file, $files);
     }
 
-    private function create_workbook(): void {
+    private function create_workbook(): Spreadsheet {
 
         $spreadsheet = new Spreadsheet();
 
@@ -121,13 +123,13 @@ class Parser {
         // ->setCategory("Test result file");
 
 
-        $spreadsheet = $this->new_spreadsheet;
+        return $spreadsheet;
     }
 
 
     private function write_stats(string $operation, array $statistics): void {
 
-        $stats_sheet = $this->new_spreadsheet->getActiveSheet();
+        $stats_sheet = $this->new_spreadsheet->getSheet(0);
         $stats_sheet->setTitle(ucwords("$operation Stats"));
 
         $summary = sprintf(
@@ -161,7 +163,7 @@ class Parser {
 
         $writer = IOFactory::createWriter($this->new_spreadsheet, 'Xlsx');
 
-        $output_file = OUTPUT_DIR . DIRECTORY_SEPARATOR . date('YmdHis') . "$name.xlsx";
+        $output_file = Parser::OUTPUT_DIR . DIRECTORY_SEPARATOR . date('YmdHis') . "$name.xlsx";
 
         $writer->save($output_file);
     }
