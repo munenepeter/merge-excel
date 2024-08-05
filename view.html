@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabbed Workbook Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <style>
+        .tab-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .tab-buttons {
+            display: flex;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            padding: 10px;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            margin-right: 2px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #e7e7e7;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-top: none;
+            overflow: auto;
+            /* Allow scrolling */
+            position: relative;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+    
+
+    </style>
+</head>
+
+<body class="p-4">
+
+    <div id="outputContainer" class="tab-container"></div>
+
+    <script src="workbookview.js"></script>
+    <script>
+
+        renderExcelTable('output\\2024080513060966b0a3cc25ea6-merged.xlsx', 'outputContainer');
+    </script>
+</body>
+
+</html>
