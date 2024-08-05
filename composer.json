@@ -9,8 +9,7 @@
         }
     ],
     "require": {
-        "phpoffice/phpspreadsheet": "^2.1",
-        "symfony/console": "^7.1"
+        "phpoffice/phpspreadsheet": "^2.1"
     },
     "autoload": {
         "psr-4": {
