@@ -56,44 +56,57 @@ class Parser {
         return true;
     }
 
-    public function merge(string $path, callable $progressCallback = null): bool {
+    public function merge(string $path, string $requestTag, callable $progressCallback = null): bool {
 
-        if ($this->new_spreadsheet == null)
+        if ($this->new_spreadsheet == null) {
             throw new \LogicException("We have not created a new spreadsheet!");
+        }
 
         $sheet_index = 0;
         $stats = [];
 
         foreach ($this->get_workbooks($path) as $workbook) {
+            $filename = basename($workbook);
 
-            $spreadsheet = IOFactory::load($workbook);
-            $sheet_count = $spreadsheet->getSheetCount();
-            $this->total_sheets += $sheet_count;
+            // Check if the filename starts with the request tag
+            if (strpos($filename, $requestTag) === 0) {
+                $spreadsheet = IOFactory::load($workbook);
+                $sheet_count = $spreadsheet->getSheetCount();
+                $this->total_sheets += $sheet_count;
 
-            $stats[] = ['filename' => basename($workbook), 'sheet_count' => $sheet_count];
+                $stats[] = ['filename' => $filename, 'sheet_count' => $sheet_count];
 
-            foreach ($spreadsheet->getAllSheets() as $sheet) {
+                foreach ($spreadsheet->getAllSheets() as $sheet) {
 
-                $new_sheet = new Worksheet($this->new_spreadsheet, basename($workbook, '.' . pathinfo($workbook, PATHINFO_EXTENSION)) . ' S' . $sheet_index);
+                    $underscorePos = strrpos($filename, '_');
+                    $cleanedFilename = $underscorePos !== false
+                        ? substr($filename, $underscorePos + 1)
+                        : substr($filename, strlen($requestTag));
 
-                $this->new_spreadsheet->addSheet($new_sheet);
+                    $cleanedBaseName = basename($cleanedFilename, '.' . pathinfo($filename, PATHINFO_EXTENSION));
 
-                $this->copy_sheet_content($sheet, $new_sheet);
-            }
+                    $new_sheet = new Worksheet($this->new_spreadsheet, $cleanedBaseName . ' S' . $sheet_index);
+                 
 
-            $sheet_index++;
-            
-            if ($progressCallback) {
-                $progressCallback($this->no_of_workbooks);
+                    $this->new_spreadsheet->addSheet($new_sheet);
+
+                    $this->copy_sheet_content($sheet, $new_sheet);
+                }
+                
+                $sheet_index++;
+
+                if ($progressCallback) {
+                    $progressCallback($this->no_of_workbooks);
+                }
             }
         }
-
         $this->write_stats(operation: "merged", statistics: $stats);
 
         return true;
     }
 
-    private function get_workbooks(string $path = 'uploads'): array {
+
+    public  function get_workbooks(string $path = 'uploads'): array {
         if (!is_dir($path))
             throw new \InvalidArgumentException("$path is not a valid directory!");
 
@@ -127,7 +140,7 @@ class Parser {
     }
 
 
-    private function write_stats(string $operation, array $statistics): void {
+    private function write_stats(string $operation, array $statistics, string $file_name = 'output'): void {
 
         $stats_sheet = $this->new_spreadsheet->getSheet(0);
         $stats_sheet->setTitle(ucwords("$operation Stats"));
@@ -157,13 +170,17 @@ class Parser {
         }
 
 
-        $this->save_workbook(name: "output");
+        $this->save_workbook(name: $file_name . '-' . $operation);
     }
     private function save_workbook(string $name) {
 
         $writer = IOFactory::createWriter($this->new_spreadsheet, 'Xlsx');
 
-        $output_file = Parser::OUTPUT_DIR . DIRECTORY_SEPARATOR . date('YmdHis') . "$name.xlsx";
+        if (!file_exists(Parser::OUTPUT_DIR)) {
+            mkdir(Parser::OUTPUT_DIR, 0777, true);
+        }
+
+        $output_file = Parser::OUTPUT_DIR . DIRECTORY_SEPARATOR . "$name.xlsx";
 
         $writer->save($output_file);
     }
